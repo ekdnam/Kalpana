@@ -48,27 +48,18 @@ class Opt:
     ):
         r"""A class which contains all the required inputs for the model
 
-        n_epochs: number of epochs of training
-
-        batch_size: size of batches
-
-        lr: adam learning rate
-
-        b1: adam decay of first order momentum of gradient
-
-        b2: adam decay of first order momentum of gradient
-
-        n_cpu: number of cpu threads during batch generation
-
-        latent_dim: dimensionality of latent space
-
-        n_classes: number of classes for dataset
-
-        img_size: size of each image channels
-
-        channels: number of image channels
-
-        sample_interval: interval between image sampling
+        Args:
+            n_epochs: number of epochs of training
+            batch_size: size of batches
+            lr: adam learning rate
+            b1: adam decay of first order momentum of gradient
+            b2: adam decay of first order momentum of gradient
+            n_cpu: number of cpu threads during batch generation
+            latent_dim: dimensionality of latent space
+            n_classes: number of classes for dataset
+            img_size: size of each image channels
+            channels: number of image channels
+            sample_interval: interval between image sampling
         """
         self.n_epochs = n_epochs
         self.batch_size = batch_size
