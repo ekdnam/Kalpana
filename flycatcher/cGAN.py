@@ -16,6 +16,7 @@ import torch
 
 os.makedirs("images", exist_ok=True)
 
+
 class Opt:
     def __init__(
         self,
@@ -125,6 +126,7 @@ class Discriminator(nn.Module):
         validity = self.model(d_in)
         return validity
 
+
 adversarial_loss = torch.nn.MSELoss()
 
 generator = Generator()
@@ -135,12 +137,91 @@ if cuda:
     discriminator.cuda()
     adversarial_loss.cuda()
 
-os.makedirs("../../data/mnist", exist_ok = True)
-datalaoder = torch.utils.data.DataLoader(
+os.makedirs("../../data/mnist", exist_ok=True)
+dataloader = torch.utils.data.DataLoader(
     datasets.MNIST(
         "../../data/mnist",
         train=True,
         download=True,
-
-    )
+        transform=transforms.Compose(
+            [
+                transforms.Resize(opt.img_size),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5]),
+            ]
+        ),
+    ),
+    batch_size=opt.batch_size,
+    shuffle=True,
 )
+
+# Optimizer
+optimizer_G = torch.optim.Adam(
+    generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2)
+)
+optimizer_D = torch.optim.Adam(
+    discriminator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2)
+)
+
+FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
+LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
+
+
+def sample_image(n_row, batches_done):
+    z = Variable(np.random.normal(0, 1, (n_row ** 2, opt.latent_dim)))
+
+    labels = np.array([num for _ in range(n_row) for num in range(n_row)])
+    labels = Variable(LongTensor(labels))
+    gen_imgs = generator(z, labels)
+    save_image(
+        gen_imgs.data, "images/%d.png" % batches_done, nrow=n_row, normalize=True
+    )
+
+
+print("-------------Training----------")
+for epoch in range(opt.n_epochs):
+    for i, (imgs, labels) in enumerate(dataloader):
+        batch_size = imgs.shape[0]
+
+        valid = Variable(FloatTensor(batch_size, 1).fill_(1.0), requires_grad=False)
+        fake = Variable(FloatTensor(batch_size, 1).fill_(0.0), requires_grad=False)
+
+        real_imgs = Variable(imgs.type(FloatTensor))
+        labels = Variable(labels.type(LongTensor))
+
+        optimizer_G.zero_grad()
+
+        z = Variable(FloatTensor(np.random.normal(0, 1, (batch_size, opt.latent_dim))))
+        gen_labels = Variable(
+            LongTensor(np.random.randint(0, opt.n_classes, batch_size))
+        )
+
+        gen_imgs = generator(z, labels)
+
+        validity = discriminator(gen_imgs, gen_labels)
+        g_loss = adversarial_loss(validity, valid)
+
+        g_loss.backward()
+        optimizer_G.step()
+
+        optimizer_D.zero_grad()
+
+        validity_real - discriminator(real_imgs, labels)
+        d_real_loss = adversarial_loss(validity_real, valid)
+
+        validity_fake = discriminator(gen_imgs.detach(), gen_labels)
+        d_fake_loss = adversarial_loss(validity_fake, fake)
+
+        d_loss = (d_real_loss + d_fake_loss)/2
+
+        d_loss.backward()
+        optimizer_D.step()
+
+        print(
+            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
+            % (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
+        )
+
+        batches_done = epoch * len(dataloader) + i
+        if batches_done % opt.sample_interval == 0:
+            sample_image(n_row=10, batches_done=batches_done)
