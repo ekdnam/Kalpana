@@ -33,9 +33,9 @@ class Generator(nn.Module):
             nn.Conv2d(64, self.n_channels, 3, stride=1, padding=1),
         )
 
-        def forward(self, noise, labels):
-            gen_input = torch.mul(self.label_emb(labels), noise)
-            out = self.l1(gen_input)
-            out = out.view(out.shape[0], 128, self.init_size, self.init_size)
-            img = self.model(out)
-            return img
+    def forward(self, noise, labels):
+        gen_input = torch.mul(self.label_emb(labels), noise)
+        out = self.l1(gen_input)
+        out = out.view(out.shape[0], 128, self.init_size, self.init_size)
+        img = self.model(out)
+        return img
