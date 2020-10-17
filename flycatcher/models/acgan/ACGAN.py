@@ -173,3 +173,6 @@ class ACGAN():
                     "[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %d%%] [G loss: %f]"
                     % (epoch, self.n_epochs, i, len(self.dataloader), d_loss.item(), 100 * d_acc, gen_loss.item())
                 )
+                batches_done = epoch * len(self.dataloader) + i
+                if batches_done % self.sample_interval == 0:
+                    sample_image(n_row=10, batches_done=batches_done, self.FloatTensor, self.LongTensor)
