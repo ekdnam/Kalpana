@@ -6,6 +6,11 @@ from .datasets import Dataset
 import numpy as np
 
 from torch.autograd import Variable
+from torch.utils.data import DataLoader
+from torchvision import datasets
+import torchvision.transforms as transforms
+
+import os
 
 
 class ACGAN:
@@ -66,6 +71,7 @@ class ACGAN:
         self.sample_interval = sample_interval
         self.toShuffle = toShuffle
 
+        os.makedirs("output_images/acgan", exist_ok=True)
         """Create Generator"""
         self.generator_block = Generator(
             self.latent_dim, self.n_classes, self.img_size, self.channels
@@ -96,12 +102,30 @@ class ACGAN:
             self.adversarial_loss.cpu()
             self.auxillary_loss.cpu()
 
-        """get dataset"""
-        dataset = Dataset(
-            img_size=self.img_size, batch_size=self.batch_size, toShuffle=self.toShuffle
-        )
-        self.dataloader = dataset.dataloader()
+        # """get dataset"""
+        # dataset = Dataset(
+        #     img_size=self.img_size, batch_size=self.batch_size, toShuffle=self.toShuffle
+        # )
+        # self.dataloader = dataset.dataloader()
 
+        os.makedirs("data/mnist", exist_ok=True)
+
+        self.dataloader = DataLoader(
+            datasets.MNIST(
+                "data/mnist",
+                train=True,
+                download=True,
+                transform=transforms.Compose(
+                    [
+                        transforms.Resize(self.img_size),
+                        transforms.ToTensor(),
+                        transforms.Normalize([0.5], [0.5]),
+                    ]
+                ),
+            ),
+            batch_size=self.batch_size,
+            shuffle=toShuffle,
+        )
         """optimizers for the generator and discriminator"""
         self.generator_optimizer = torch.optim.Adam(
             self.generator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
