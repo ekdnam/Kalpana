@@ -40,8 +40,8 @@ class Discriminator(nn.Module):
         self.model = nn.Sequential(
             *discriminator_block(
                 in_filters=self.channels, out_filters=16, apply_batch_norm=False
-            )
-            * discriminator_block(16, 32),
+            ),
+            *discriminator_block(16, 32),
             *discriminator_block(32, 64),
             *discriminator_block(64, 128)
         )

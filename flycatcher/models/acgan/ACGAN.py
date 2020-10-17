@@ -67,7 +67,9 @@ class ACGAN:
         self.toShuffle = toShuffle
 
         """Create Generator"""
-        self.generator_block = Generator(self.latent_dim, self.n_classes, self.img_size)
+        self.generator_block = Generator(
+            self.latent_dim, self.n_classes, self.img_size, self.channels
+        )
 
         """Create Discriminator"""
         self.discriminator_block = Discriminator(
