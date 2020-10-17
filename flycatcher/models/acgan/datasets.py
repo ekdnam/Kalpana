@@ -6,7 +6,6 @@ import os
 import torchvision.transforms as transforms
 
 class Dataset():
-    r"""The dataset"""
     def __init__(self, img_size: int = 32, batch_size: int = 64, toShuffle: bool = True):
         r"""Creates a dataset
 
@@ -20,6 +19,7 @@ class Dataset():
             toShuffle(bool): whether to shuffle the data
                 default: True
         """
+        super(Dataset, self).__init__()
         os.makedirs("../../data/mnist", exist_ok = True)
         self.img_size = img_size
         self.batch_size = batch_size
