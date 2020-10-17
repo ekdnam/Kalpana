@@ -126,3 +126,6 @@ dmypy.json
 
 # data folder
 data
+
+# trial file
+trial.py
