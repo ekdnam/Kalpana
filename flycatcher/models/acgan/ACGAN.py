@@ -7,7 +7,8 @@ import numpy as np
 
 from torch.autograd import Variable
 
-class ACGAN():
+
+class ACGAN:
     def __init__(
         self,
         n_epochs: int = 200,
@@ -21,7 +22,7 @@ class ACGAN():
         img_size: int = 32,
         channels: int = 1,
         sample_interval: int = 500,
-        toShuffle: bool = True
+        toShuffle: bool = True,
     ):
         super(ACGAN, self).__init__()
         r"""The base model for ACGAN
@@ -69,7 +70,9 @@ class ACGAN():
         self.generator_block = Generator(self.latent_dim, self.n_classes, self.img_size)
 
         """Create Discriminator"""
-        self.discriminator_block = Discriminator(self.channels, self.n_classes, self.img_size)
+        self.discriminator_block = Discriminator(
+            self.channels, self.n_classes, self.img_size
+        )
 
         """loss functions"""
         self.adversarial_loss = torch.nn.BCELoss()
@@ -92,12 +95,18 @@ class ACGAN():
             self.auxillary_loss.cpu()
 
         """get dataset"""
-        dataset = Dataset(img_size=self.img_size, batch_size=self.batch_size, toShuffle=self.toShuffle)
+        dataset = Dataset(
+            img_size=self.img_size, batch_size=self.batch_size, toShuffle=self.toShuffle
+        )
         self.dataloader = dataset.dataloader()
 
         """optimizers for the generator and discriminator"""
-        self.generator_optimizer = torch.optim.Adam(self.generator_block.parameters(), lr = self.lr, betas = (self.b1, self.b2))
-        self.discriminator_optimizer = torch.optim.Adam(self.discriminator_block.parameters(), lr = self.lr, betas = (self.b1, self.b2))
+        self.generator_optimizer = torch.optim.Adam(
+            self.generator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
+        )
+        self.discriminator_optimizer = torch.optim.Adam(
+            self.discriminator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
+        )
 
         """create tensors"""
         self.FloatTensor = torch.cuda.FloatTensor if self.cuda else torch.FloatTensor
@@ -113,8 +122,12 @@ class ACGAN():
                 batch_size = imgs.shape[0]
 
                 """adversarial ground truths"""
-                valid = Variable(self.FloatTensor(self.batch_size, 1).fill_(1.0), requires_grad = False)
-                fake = Variable(self.FloatTensor(self.batch_size, 1).fill_(0.0), requires_grad = False)
+                valid = Variable(
+                    self.FloatTensor(self.batch_size, 1).fill_(1.0), requires_grad=False
+                )
+                fake = Variable(
+                    self.FloatTensor(self.batch_size, 1).fill_(0.0), requires_grad=False
+                )
 
                 """configure input"""
                 real_imgs = Variable(imgs.type(self.FloatTensor))
@@ -127,52 +140,77 @@ class ACGAN():
                 z = Variable(
                     self.FloatTensor(
                         np.random.normal(0.1, (self.batch_size, self.latent_dim))
-                        )
                     )
+                )
                 gen_labels = Variable(
                     self.LongTensor(
                         np.random.randint(0, self.n_classes, self.batch_size)
-                        )
                     )
-                
+                )
+
                 """generate a batch of images"""
 
                 gen_imgs = self.generator_block(z, gen_labels)
 
                 """measure generator's ability to fool discriminator"""
                 validity, pred_label = self.discriminator_block(gen_imgs)
-                gen_loss = 0.5 * (self.adversarial_loss(validity, valid) + self.auxillary_loss(pred_label, gen_labels))
+                gen_loss = 0.5 * (
+                    self.adversarial_loss(validity, valid)
+                    + self.auxillary_loss(pred_label, gen_labels)
+                )
 
                 gen_loss.backward()
                 self.generator_optimizer.step()
-
 
                 """train discriminator"""
                 self.discriminator_optimizer.zero_grad()
 
                 """loss for real images"""
                 real_pred, real_aux = self.discriminator_block(real_imgs)
-                d_real_loss = (self.adversarial_loss(real_pred, valid)+ self.auxillary_loss(real_aux, labels)) / 2
+                d_real_loss = (
+                    self.adversarial_loss(real_pred, valid)
+                    + self.auxillary_loss(real_aux, labels)
+                ) / 2
 
                 """loss for fake images"""
                 fake_pred, fake_aux = self.discriminator_block(gen_imgs.detach())
-                d_fake_loss = (self.adversarial_loss(fake_pred, fake)+ self.auxillary_loss(fake_aux, labels)) / 2
+                d_fake_loss = (
+                    self.adversarial_loss(fake_pred, fake)
+                    + self.auxillary_loss(fake_aux, labels)
+                ) / 2
 
                 """total discriminator loss"""
                 d_loss = (d_fake_loss + d_real_loss) / 2
 
                 """calculate discriminator accuracy"""
-                pred = np.concatenate([real_aux.data.cpu().numpy(), fake_aux.data.cpu().numpy()], axis=0)
-                gt = np.concatenate([labels.data.cpu().numpy(), gen_labels.data.cpu().numpy()], axis=0)
+                pred = np.concatenate(
+                    [real_aux.data.cpu().numpy(), fake_aux.data.cpu().numpy()], axis=0
+                )
+                gt = np.concatenate(
+                    [labels.data.cpu().numpy(), gen_labels.data.cpu().numpy()], axis=0
+                )
                 d_acc = np.mean(np.argmax(pred, axis=1) == gt)
 
                 d_loss.backward()
                 self.discriminator_optimizer.backward()
-                
+
                 print(
                     "[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %d%%] [G loss: %f]"
-                    % (epoch, self.n_epochs, i, len(self.dataloader), d_loss.item(), 100 * d_acc, gen_loss.item())
+                    % (
+                        epoch,
+                        self.n_epochs,
+                        i,
+                        len(self.dataloader),
+                        d_loss.item(),
+                        100 * d_acc,
+                        gen_loss.item(),
+                    )
                 )
                 batches_done = epoch * len(self.dataloader) + i
                 if batches_done % self.sample_interval == 0:
-                    sample_image(n_row=10, batches_done=batches_done, self.FloatTensor, self.LongTensor)
+                    sample_image(
+                        n_row=10,
+                        batches_done=batches_done,
+                        FloatTensor=self.FloatTensor,
+                        LongTensor=self.LongTensor,
+                    )

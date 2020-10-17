@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class Generator(nn.Module):
     def __init__(self, latent_dim: int, n_classes: int, img_size: int, channels: int):
         r"""The Generator block of a GAN
@@ -29,7 +30,7 @@ class Generator(nn.Module):
             nn.Conv2d(128, 64, 3, stride=1, padding=1),
             nn.BatchNorm2d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, self.n_channels, 3, stride=1, padding=1)
+            nn.Conv2d(64, self.n_channels, 3, stride=1, padding=1),
         )
 
         def forward(self, noise, labels):

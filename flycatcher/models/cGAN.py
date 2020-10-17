@@ -31,6 +31,7 @@ os.makedirs("images", exist_ok=True)
 # opt = parser.parse_args()
 # print(opt)
 
+
 class Opt:
     def __init__(
         self,
@@ -156,7 +157,11 @@ dataloader = torch.utils.data.DataLoader(
         train=True,
         download=True,
         transform=transforms.Compose(
-            [transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
+            [
+                transforms.Resize(opt.img_size),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5]),
+            ]
         ),
     ),
     batch_size=opt.batch_size,
@@ -164,8 +169,12 @@ dataloader = torch.utils.data.DataLoader(
 )
 
 # Optimizers
-optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
-optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
+optimizer_G = torch.optim.Adam(
+    generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2)
+)
+optimizer_D = torch.optim.Adam(
+    discriminator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2)
+)
 
 FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
@@ -179,7 +188,9 @@ def sample_image(n_row, batches_done):
     labels = np.array([num for _ in range(n_row) for num in range(n_row)])
     labels = Variable(LongTensor(labels))
     gen_imgs = generator(z, labels)
-    save_image(gen_imgs.data, "images/%d.png" % batches_done, nrow=n_row, normalize=True)
+    save_image(
+        gen_imgs.data, "images/%d.png" % batches_done, nrow=n_row, normalize=True
+    )
 
 
 # ----------
@@ -207,7 +218,9 @@ for epoch in range(opt.n_epochs):
 
         # Sample noise and labels as generator input
         z = Variable(FloatTensor(np.random.normal(0, 1, (batch_size, opt.latent_dim))))
-        gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, batch_size)))
+        gen_labels = Variable(
+            LongTensor(np.random.randint(0, opt.n_classes, batch_size))
+        )
 
         # Generate a batch of images
         gen_imgs = generator(z, gen_labels)

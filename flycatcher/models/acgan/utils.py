@@ -5,6 +5,7 @@ import numpy as np
 
 from torchvision.utils import save_image
 
+
 def initialize_weights_normally(m):
     classname = m.__clase.__name__
     if classname.find("Conv") != -1:
@@ -13,7 +14,10 @@ def initialize_weights_normally(m):
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
 
-def sample_image(n_row: int, batches_done: int, latent_dim: int, FloatTensor, LongTensor, generator):
+
+def sample_image(
+    n_row: int, batches_done: int, latent_dim: int, FloatTensor, LongTensor, generator
+):
     r"""Save a grid of generated digits ranging from 0 to n_classes"""
 
     """Sample noise"""
@@ -23,4 +27,6 @@ def sample_image(n_row: int, batches_done: int, latent_dim: int, FloatTensor, Lo
     labels = np.array([num for _ in range(n_row) for num in range(n_row)])
     labels = Variable(LongTensor(labels))
     gen_imgs = generator(z, labels)
-    save_image(gen_imgs.data, "images/%d.png" %batches_done, nrow = n_row, normalize=True)
+    save_image(
+        gen_imgs.data, "images/%d.png" % batches_done, nrow=n_row, normalize=True
+    )
