@@ -1,1 +1,1 @@
-from .ACGAN import ACGAN
+from .ACGAN import AuxillaryClassifierGAN

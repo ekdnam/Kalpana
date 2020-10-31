@@ -1,10 +1,13 @@
-from .utils import *
+from .utils import initialize_weights_normally
+from .utils import save_image
+
 from .generator import Generator
 from .discriminator import Discriminator
 from .datasets import Dataset
 
 import numpy as np
 
+import torch
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -13,7 +16,7 @@ import torchvision.transforms as transforms
 import os
 
 
-class ACGAN:
+class AuxillaryClassifierGAN():
     def __init__(
         self,
         n_epochs: int = 200,
@@ -29,7 +32,7 @@ class ACGAN:
         sample_interval: int = 500,
         toShuffle: bool = True,
     ):
-        super(ACGAN, self).__init__()
+        super(AuxillaryClassifierGAN, self).__init__()
         r"""The base model for ACGAN
 
         Args:
@@ -124,7 +127,7 @@ class ACGAN:
                 ),
             ),
             batch_size=self.batch_size,
-            shuffle=toShuffle,
+            shuffle=toShuffle
         )
         """optimizers for the generator and discriminator"""
         self.generator_optimizer = torch.optim.Adam(
@@ -165,7 +168,8 @@ class ACGAN:
                 """sample noise and labels as generator input"""
                 z = Variable(
                     self.FloatTensor(
-                        np.random.normal(0.1, (self.batch_size, self.latent_dim))
+                        np.random.normal(
+                            0.1, (self.batch_size, self.latent_dim))
                     )
                 )
                 gen_labels = Variable(
@@ -199,7 +203,8 @@ class ACGAN:
                 ) / 2
 
                 """loss for fake images"""
-                fake_pred, fake_aux = self.discriminator_block(gen_imgs.detach())
+                fake_pred, fake_aux = self.discriminator_block(
+                    gen_imgs.detach())
                 d_fake_loss = (
                     self.adversarial_loss(fake_pred, fake)
                     + self.auxillary_loss(fake_aux, labels)
@@ -234,7 +239,7 @@ class ACGAN:
                 )
                 batches_done = epoch * len(self.dataloader) + i
                 if batches_done % self.sample_interval == 0:
-                    sample_image(
+                    save_image(
                         n_row=10,
                         batches_done=batches_done,
                         FloatTensor=self.FloatTensor,
