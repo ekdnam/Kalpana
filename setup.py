@@ -21,6 +21,6 @@ setuptools.setup(
     	"torch>=1.6.0",
     	"torchvision>=0.7.0"
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.6",
     zip_safe = False
 	)
