@@ -1,1 +1,1 @@
-from .models import *
+from flycatcher import models
