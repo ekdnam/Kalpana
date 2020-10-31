@@ -16,7 +16,7 @@ import torchvision.transforms as transforms
 import os
 
 
-class AuxillaryClassifierGAN():
+class AuxillaryClassifierGAN:
     def __init__(
         self,
         n_epochs: int = 200,
@@ -127,7 +127,7 @@ class AuxillaryClassifierGAN():
                 ),
             ),
             batch_size=self.batch_size,
-            shuffle=toShuffle
+            shuffle=toShuffle,
         )
         """optimizers for the generator and discriminator"""
         self.generator_optimizer = torch.optim.Adam(
@@ -168,8 +168,7 @@ class AuxillaryClassifierGAN():
                 """sample noise and labels as generator input"""
                 z = Variable(
                     self.FloatTensor(
-                        np.random.normal(
-                            0.1, (self.batch_size, self.latent_dim))
+                        np.random.normal(0.1, (self.batch_size, self.latent_dim))
                     )
                 )
                 gen_labels = Variable(
@@ -203,8 +202,7 @@ class AuxillaryClassifierGAN():
                 ) / 2
 
                 """loss for fake images"""
-                fake_pred, fake_aux = self.discriminator_block(
-                    gen_imgs.detach())
+                fake_pred, fake_aux = self.discriminator_block(gen_imgs.detach())
                 d_fake_loss = (
                     self.adversarial_loss(fake_pred, fake)
                     + self.auxillary_loss(fake_aux, labels)

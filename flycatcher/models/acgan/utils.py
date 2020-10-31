@@ -28,5 +28,8 @@ def utils_save_image(
     labels = Variable(LongTensor(labels))
     gen_imgs = generator(z, labels)
     save_image(
-        gen_imgs.data, "output_images/acgan/images/%d.png" % batches_done, nrow=n_row, normalize=True
+        gen_imgs.data,
+        "output_images/acgan/images/%d.png" % batches_done,
+        nrow=n_row,
+        normalize=True,
     )
