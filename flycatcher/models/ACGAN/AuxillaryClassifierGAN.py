@@ -1,5 +1,5 @@
 from .utils import initialize_weights_normally
-from .utils import save_image
+from .utils import utils_save_image as save_image
 
 from .generator import Generator
 from .discriminator import Discriminator

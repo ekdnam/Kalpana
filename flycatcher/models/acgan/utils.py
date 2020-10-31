@@ -15,7 +15,7 @@ def initialize_weights_normally(m):
         torch.nn.init.constant_(m.bias.data, 0.0)
 
 
-def save_image(
+def utils_save_image(
     n_row: int, batches_done: int, latent_dim: int, FloatTensor, LongTensor, generator
 ):
     r"""Save a grid of generated digits ranging from 0 to n_classes"""

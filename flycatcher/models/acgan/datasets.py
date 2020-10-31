@@ -23,7 +23,7 @@ class Dataset:
                 default: True
         """
         super(Dataset, self).__init__()
-        os.makedirs("../../data/mnist", exist_ok=True)
+        os.makedirs("../data/mnist", exist_ok=True)
         self.img_size = img_size
         self.batch_size = batch_size
         self.dataloader = DataLoader(
