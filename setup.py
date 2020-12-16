@@ -50,6 +50,7 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
+PATH_ROOT = os.path.dirname(__file__)
 
 # Remove stale transformers.egg-info directory to avoid https://github.com/pypa/pip/issues/5466
 stale_egg_info = Path(__file__).parent / "flycatcher.egg-info"
@@ -66,50 +67,24 @@ if stale_egg_info.exists():
 
 extras = {}
 
-# extras["ja"] = ["fugashi>=1.0", "ipadic>=1.0.0,<2.0", "unidic_lite>=1.0.7", "unidic>=1.0.2"]
-# extras["sklearn"] = ["scikit-learn"]
-
-# # keras2onnx and onnxconverter-common version is specific through a commit until 1.7.0 lands on pypi
-# extras["tf"] = [
-#     "tensorflow>=2.0",
-#     "onnxconverter-common",
-#     "keras2onnx"
-#     # "onnxconverter-common @ git+git://github.com/microsoft/onnxconverter-common.git@f64ca15989b6dc95a1f3507ff6e4c395ba12dff5#egg=onnxconverter-common",
-#     # "keras2onnx @ git+git://github.com/onnx/keras-onnx.git@cbdc75cb950b16db7f0a67be96a278f8d2953b48#egg=keras2onnx",
-# ]
-# extras["tf-cpu"] = [
-#     "tensorflow-cpu>=2.0",
-#     "onnxconverter-common",
-#     "keras2onnx"
-#     # "onnxconverter-common @ git+git://github.com/microsoft/onnxconverter-common.git@f64ca15989b6dc95a1f3507ff6e4c395ba12dff5#egg=onnxconverter-common",
-#     # "keras2onnx @ git+git://github.com/onnx/keras-onnx.git@cbdc75cb950b16db7f0a67be96a278f8d2953b48#egg=keras2onnx",
-# ]
-extras["torch"] = ["torch>=1.6"]
-extras["torchvision"] = ["torchvision>=0.7.0"]
-
-# if os.name == "nt":  # windows
-#     extras["retrieval"] = ["datasets"] # faiss is not supported on windows
-#     extras["flax"] = [] # jax is not supported on windows
-# else:
-#     extras["retrieval"] = ["faiss-cpu", "datasets"]
-#     extras["flax"] = ["jaxlib==0.1.55", "jax>=0.2.0", "flax==0.2.2"]
-
-# extras["tokenizers"] = ["tokenizers==0.9.2"]
-# extras["onnxruntime"] = ["onnxruntime>=1.4.0", "onnxruntime-tools>=1.4.2"]
-
-# extras["serving"] = ["pydantic", "uvicorn", "fastapi", "starlette"]
-
-# extras["sentencepiece"] = ["sentencepiece==0.1.91"]
-# extras["retrieval"] = ["faiss-cpu", "datasets"]
-# extras["testing"] = ["pytest", "pytest-xdist", "timeout-decorator", "parameterized", "psutil"] + extras["retrieval"]
-# # sphinx-rtd-theme==0.5.0 introduced big changes in the style.
-# extras["docs"] = ["recommonmark", "sphinx", "sphinx-markdown-tables", "sphinx-rtd-theme==0.4.3", "sphinx-copybutton"]
-# extras["quality"] = ["black >= 20.8b1", "isort >= 5.5.4", "flake8 >= 3.8.3"]
-
-
-# extras["all"] = extras["tf"] + extras["torch"] + extras["flax"] + extras["sentencepiece"] + extras["tokenizers"]
-
-# extras["dev"] = extras["all"] + extras["testing"] + extras["quality"] + extras["ja"] + extras["docs"] + extras["sklearn"]
+def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comment_char: str = '#') -> List[str]:
+    """Load requirements from a file
+    >>> _load_requirements(PROJECT_ROOT)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    ['numpy...', 'torch...', ...]
+    """
+    with open(os.path.join(path_dir, file_name), 'r') as file:
+        lines = [ln.strip() for ln in file.readlines()]
+    reqs = []
+    for ln in lines:
+        # filer all comments
+        if comment_char in ln:
+            ln = ln[:ln.index(comment_char)].strip()
+        # skip directly installed dependencies
+        if ln.startswith('http'):
+            continue
+        if ln:  # if requirement is not empty
+            reqs.append(ln)
+    return reqs
 
 
 setup(
@@ -125,28 +100,8 @@ setup(
     url="https://github.com/ekdnam/flycatcher",
     # package_dir={"": "src"},
     # packages=find_packages("src"),
-    install_requires=[
-        "numpy",
-        # "tokenizers == 0.9.2",
-        # # dataclasses for Python versions that don't have it
-        # "dataclasses;python_version<'3.7'",
-        # # utilities from PyPA to e.g. compare versions
-        # "packaging",
-        # # filesystem locks e.g. to prevent parallel downloads
-        # "filelock",
-        # # for downloading models over HTTPS
-        # "requests",
-        # # progress bars in model download and training scripts
-        # "tqdm >= 4.27",
-        # # for OpenAI GPT
-        # "regex != 2019.12.17",
-        # # for SentencePiece models
-        # "sentencepiece == 0.1.91",
-        # "protobuf",
-        # # for XLM
-        # "sacremoses",
-    ],
-    extras_require=extras,
+    install_requires=_load_requirements(PATH_ROOT),
+    # extras_require=extras,
     # entry_points={"console_scripts": ["transformers-cli=transformers.commands.transformers_cli:main"]},
     python_requires=">=3.6.0",
     classifiers=[
