@@ -1,71 +1,32 @@
-"""
-Simple check list from AllenNLP repo: https://github.com/allenai/allennlp/blob/master/setup.py
-
-To create the package for pypi.
-
-1. Change the version in __init__.py, setup.py as well as docs/source/conf.py. Remove the master from the links in
-   the new models of the README:
-   (https://huggingface.co/transformers/master/model_doc/ -> https://huggingface.co/transformers/model_doc/)
-   then run `make fix-copies` to fix the index of the documentation.
-
-2. Unpin specific versions from setup.py that use a git install.
-
-2. Commit these changes with the message: "Release: VERSION"
-
-3. Add a tag in git to mark the release: "git tag VERSION -m'Adds tag VERSION for pypi' "
-   Push the tag to git: git push --tags origin master
-
-4. Build both the sources and the wheel. Do not change anything in setup.py between
-   creating the wheel and the source distribution (obviously).
-
-   For the wheel, run: "python setup.py bdist_wheel" in the top level directory.
-   (this will build a wheel for the python version you use to build it).
-
-   For the sources, run: "python setup.py sdist"
-   You should now have a /dist directory with both .whl and .tar.gz source versions.
-
-5. Check that everything looks correct by uploading the package to the pypi test server:
-
-   twine upload dist/* -r pypitest
-   (pypi suggest using twine as other methods upload files via plaintext.)
-   You may have to specify the repository url, use the following command then:
-   twine upload dist/* -r pypitest --repository-url=https://test.pypi.org/legacy/
-
-   Check that you can install it in a virtualenv by running:
-   pip install -i https://testpypi.python.org/pypi transformers
-
-6. Upload the final version to actual pypi:
-   twine upload dist/* -r pypi
-
-7. Copy the release notes from RELEASE.md to the tag in github once everything is looking hunky-dory.
-
-8. Add the release version to docs/source/_static/js/custom.js and .circleci/deploy.sh
-
-9. Update README.md to redirect to correct documentation.
-"""
+#!/usr/bin/env python
+# Copyright The PyTorch Lightning team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import os
-import shutil
-from pathlib import Path
 
+# Always prefer setuptools over distutils
 from setuptools import find_packages, setup
 
+# try:
+#     import builtins
+# except ImportError:
+#     import __builtin__ as builtins
+
+# https://packaging.python.org/guides/single-sourcing-package-version/
+# http://blog.ionelmc.ro/2014/05/25/python-packaging/
 PATH_ROOT = os.path.dirname(__file__)
-
-# Remove stale transformers.egg-info directory to avoid https://github.com/pypa/pip/issues/5466
-# stale_egg_info = Path(__file__).parent / "flycatcher.egg-info"
-# if stale_egg_info.exists():
-#     print(
-#         (
-#             "Warning: {} exists.\n\n"
-#             "Removing old directories of flycatcher"
-#             "See https://github.com/pypa/pip/issues/5466 for details.\n"
-#         ).format(stale_egg_info)
-#     )
-#     shutil.rmtree(stale_egg_info)
-
-
-# extras = {}
+# builtins.__LIGHTNING_SETUP__ = True
 
 def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comment_char: str = '#') -> List[str]:
     """Load requirements from a file
@@ -87,26 +48,85 @@ def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comm
     return reqs
 
 
+# import pytorch_lightning  # noqa: E402
+# from pytorch_lightning.setup_tools import _load_long_description, _load_requirements  # noqa: E402
+
+# https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras
+# Define package extras. These are only installed if you specify them.
+# From remote, use like `pip install pytorch-lightning[dev, docs]`
+# From local copy of repo, use like `pip install ".[dev, docs]"`
+extras = {
+    # 'docs': load_requirements(file_name='docs.txt'),
+    'examples': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='examples.txt'),
+    'loggers': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='loggers.txt'),
+    'extra': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='extra.txt'),
+    'test': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='test.txt')
+}
+extras['dev'] = extras['extra'] + extras['loggers'] + extras['test']
+extras['all'] = extras['dev'] + extras['examples']  # + extras['docs']
+
+# These packages shall be installed only on GPU machines
+PACKAGES_GPU_ONLY = (
+    'horovod',
+)
+# create a version for CPU machines
+for ex in ('cpu', 'cpu-extra'):
+    kw = ex.split('-')[1] if '-' in ex else 'all'
+    # filter cpu only packages
+    extras[ex] = [pkg for pkg in extras[kw] if not any(pgpu.lower() in pkg.lower() for pgpu in PACKAGES_GPU_ONLY)]
+
+# https://packaging.python.org/discussions/install-requires-vs-requirements /
+# keep the meta-data here for simplicity in reading this file... it's not obvious
+# what happens and to non-engineers they won't know to look in init ...
+# the goal of the project is simplicity for researchers, don't want to add too much
+# engineer specific practices
 setup(
     name="flycatcher",
-    version="0.0.1",
+    version=0.0.1,
+    description="A research framework for SOTA implementations of GANs",
     author="Aditya Mandke",
     author_email="ekdnam@gmail.com",
-    description="A research framework for state-of-the-art implementations of Generative Adversarial Networks in PyTorch",
-    long_description=open("README.md", "r", encoding="utf-8").read(),
-    long_description_content_type="text/markdown",
-    keywords="pytorch deep learning generative adversarial networks",
+    # url=pytorch_lightning.__homepage__,
+    download_url='https://github.com/PyTorchLightning/pytorch-lightning',
     license="MIT",
-    url="https://github.com/ekdnam/flycatcher",
-    # package_dir={"": "src"},
-    # packages=find_packages("src"),
+    packages=find_packages(exclude=['tests', 'tests/*', 'benchmarks']),
+
+    # long_description=_load_long_description(PATH_ROOT),
+    long_description_content_type='text/markdown',
+    include_package_data=True,
+    zip_safe=False,
+
+    keywords=['deep learning', 'pytorch', 'AI'],
+    python_requires='>=3.6',
+    setup_requires=[],
     install_requires=_load_requirements(PATH_ROOT),
-    # extras_require=extras,
-    # entry_points={"console_scripts": ["transformers-cli=transformers.commands.transformers_cli:main"]},
-    python_requires=">=3.6.0",
+    extras_require=extras,
+
+    project_urls={
+        # "Bug Tracker": "https://github.com/PyTorchLightning/pytorch-lightning/issues",
+        # "Documentation": "https://pytorch-lightning.rtfd.io/en/latest/",
+        # "Source Code": "https://github.com/PyTorchLightning/pytorch-lightning",
+    },
+
     classifiers=[
-        "Intended Audience :: Science/Research",
-        "Programming Language :: Python :: 3",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        'Environment :: Console',
+        'Natural Language :: English',
+        # How mature is this project? Common values are
+        #   3 - Alpha, 4 - Beta, 5 - Production/Stable
+        'Development Status :: 4 - Beta',
+        # Indicate who your project is intended for
+        'Intended Audience :: Developers',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Topic :: Scientific/Engineering :: Image Recognition',
+        'Topic :: Scientific/Engineering :: Information Analysis',
+        # Pick your license as you wish
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: OS Independent',
+        # Specify the Python versions you support here. In particular, ensure
+        # that you indicate whether you support Python 2, Python 3 or both.
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )
