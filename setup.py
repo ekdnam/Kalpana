@@ -53,19 +53,19 @@ from setuptools import find_packages, setup
 PATH_ROOT = os.path.dirname(__file__)
 
 # Remove stale transformers.egg-info directory to avoid https://github.com/pypa/pip/issues/5466
-stale_egg_info = Path(__file__).parent / "flycatcher.egg-info"
-if stale_egg_info.exists():
-    print(
-        (
-            "Warning: {} exists.\n\n"
-            "Removing old directories of flycatcher"
-            "See https://github.com/pypa/pip/issues/5466 for details.\n"
-        ).format(stale_egg_info)
-    )
-    shutil.rmtree(stale_egg_info)
+# stale_egg_info = Path(__file__).parent / "flycatcher.egg-info"
+# if stale_egg_info.exists():
+#     print(
+#         (
+#             "Warning: {} exists.\n\n"
+#             "Removing old directories of flycatcher"
+#             "See https://github.com/pypa/pip/issues/5466 for details.\n"
+#         ).format(stale_egg_info)
+#     )
+#     shutil.rmtree(stale_egg_info)
 
 
-extras = {}
+# extras = {}
 
 def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comment_char: str = '#') -> List[str]:
     """Load requirements from a file
