@@ -18,15 +18,11 @@ import os
 # Always prefer setuptools over distutils
 from setuptools import find_packages, setup
 
-# try:
-#     import builtins
-# except ImportError:
-#     import __builtin__ as builtins
 
 # https://packaging.python.org/guides/single-sourcing-package-version/
 # http://blog.ionelmc.ro/2014/05/25/python-packaging/
 PATH_ROOT = os.path.dirname(__file__)
-# builtins.__LIGHTNING_SETUP__ = True
+
 
 def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comment_char: str = '#') -> List[str]:
     """Load requirements from a file
@@ -47,39 +43,6 @@ def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comm
             reqs.append(ln)
     return reqs
 
-
-# import pytorch_lightning  # noqa: E402
-# from pytorch_lightning.setup_tools import _load_long_description, _load_requirements  # noqa: E402
-
-# https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras
-# Define package extras. These are only installed if you specify them.
-# From remote, use like `pip install pytorch-lightning[dev, docs]`
-# From local copy of repo, use like `pip install ".[dev, docs]"`
-extras = {
-    # 'docs': load_requirements(file_name='docs.txt'),
-    'examples': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='examples.txt'),
-    'loggers': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='loggers.txt'),
-    'extra': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='extra.txt'),
-    'test': _load_requirements(path_dir=os.path.join(PATH_ROOT, 'requirements'), file_name='test.txt')
-}
-extras['dev'] = extras['extra'] + extras['loggers'] + extras['test']
-extras['all'] = extras['dev'] + extras['examples']  # + extras['docs']
-
-# These packages shall be installed only on GPU machines
-PACKAGES_GPU_ONLY = (
-    'horovod',
-)
-# create a version for CPU machines
-for ex in ('cpu', 'cpu-extra'):
-    kw = ex.split('-')[1] if '-' in ex else 'all'
-    # filter cpu only packages
-    extras[ex] = [pkg for pkg in extras[kw] if not any(pgpu.lower() in pkg.lower() for pgpu in PACKAGES_GPU_ONLY)]
-
-# https://packaging.python.org/discussions/install-requires-vs-requirements /
-# keep the meta-data here for simplicity in reading this file... it's not obvious
-# what happens and to non-engineers they won't know to look in init ...
-# the goal of the project is simplicity for researchers, don't want to add too much
-# engineer specific practices
 setup(
     name="flycatcher",
     version=0.0.1,
@@ -87,33 +50,27 @@ setup(
     author="Aditya Mandke",
     author_email="ekdnam@gmail.com",
     # url=pytorch_lightning.__homepage__,
-    download_url='https://github.com/PyTorchLightning/pytorch-lightning',
+    download_url='https://github.com/ekdnam/flycatcher',
     license="MIT",
-    packages=find_packages(exclude=['tests', 'tests/*', 'benchmarks']),
+    # packages=find_packages(exclude=['tests', 'tests/*', 'benchmarks']),
 
-    # long_description=_load_long_description(PATH_ROOT),
+    long_description="A research framework for SOTA implementations of GANs",
     long_description_content_type='text/markdown',
-    include_package_data=True,
+    # include_package_data=True,
     zip_safe=False,
 
     keywords=['deep learning', 'pytorch', 'AI'],
     python_requires='>=3.6',
     setup_requires=[],
     install_requires=_load_requirements(PATH_ROOT),
-    extras_require=extras,
-
-    project_urls={
-        # "Bug Tracker": "https://github.com/PyTorchLightning/pytorch-lightning/issues",
-        # "Documentation": "https://pytorch-lightning.rtfd.io/en/latest/",
-        # "Source Code": "https://github.com/PyTorchLightning/pytorch-lightning",
-    },
+    # extras_require=extras,
 
     classifiers=[
         'Environment :: Console',
         'Natural Language :: English',
         # How mature is this project? Common values are
         #   3 - Alpha, 4 - Beta, 5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: beta',
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
