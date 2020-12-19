@@ -1,1 +1,1 @@
-import AuxillaryClassifierGAN
+from AuxillaryClassifierGAN import ACGAN_Model

@@ -16,7 +16,7 @@ import torchvision.transforms as transforms
 import os
 
 
-class AuxillaryClassifierGAN:
+class ACGAN_Model:
     def __init__(
         self,
         n_epochs: int = 200,
@@ -32,7 +32,7 @@ class AuxillaryClassifierGAN:
         sample_interval: int = 500,
         toShuffle: bool = True,
     ):
-        super(AuxillaryClassifierGAN, self).__init__()
+        super(ACGAN_Model, self).__init__()
         r"""The base model for ACGAN
 
         Args:
