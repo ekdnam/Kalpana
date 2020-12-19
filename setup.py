@@ -24,7 +24,7 @@ from setuptools import find_packages, setup
 PATH_ROOT = os.path.dirname(__file__)
 
 
-def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comment_char: str = '#') -> List[str]:
+def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comment_char: str = '#') -> list[str]:
     """Load requirements from a file
     >>> _load_requirements(PROJECT_ROOT)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     ['numpy...', 'torch...', ...]
