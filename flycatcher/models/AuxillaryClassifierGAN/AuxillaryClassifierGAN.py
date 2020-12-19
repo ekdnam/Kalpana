@@ -16,7 +16,7 @@ import torchvision.transforms as transforms
 import os
 
 
-class ACGAN_Model:
+class ModelACGAN:
     def __init__(
         self,
         n_epochs: int = 200,
@@ -32,7 +32,7 @@ class ACGAN_Model:
         sample_interval: int = 500,
         toShuffle: bool = True,
     ):
-        super(ACGAN_Model, self).__init__()
+        super(ModelACGAN, self).__init__()
         r"""The base model for ACGAN
 
         Args:

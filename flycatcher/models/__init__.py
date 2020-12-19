@@ -1,2 +1,2 @@
 from .cGAN import cGAN
-from .AuxillaryClassifierGAN import AuxillaryClassifierGAN
+from .AuxillaryClassifierGAN import ModelACGAN
