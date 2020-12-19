@@ -45,7 +45,7 @@ def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comm
 
 setup(
     name="flycatcher",
-    version=0.0.1,
+    version="0.0.1",
     description="A research framework for SOTA implementations of GANs",
     author="Aditya Mandke",
     author_email="ekdnam@gmail.com",
