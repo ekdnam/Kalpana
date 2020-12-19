@@ -1,1 +1,1 @@
-import .AuxillaryClassifierGAN
+import AuxillaryClassifierGAN
