@@ -1,4 +1,4 @@
-from flycatcher import models
+from flycatcher.flycatcher import models
 
 __version__ = "v0.0.1a"
 
