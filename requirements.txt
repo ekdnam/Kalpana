@@ -4,7 +4,11 @@ numpy>=1.16.6
 torch>=1.6.0
 torchvision>=0.7.0
 future>=0.17.1  # required for builtins in setup.py
-# pyyaml>=3.13
-PyYAML>=5.1  # OmegaConf requirement >=5.1
 tqdm>=4.41.0
 tensorboard>=2.2.0
+pandas>=1.0.0
+matplotlib
+scikit-learn
+scipy
+spacy
+nltk
