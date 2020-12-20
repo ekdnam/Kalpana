@@ -36,7 +36,7 @@ setup(
     author="Aditya Mandke",
     author_email="ekdnam@gmail.com",
     # url=pytorch_lightning.__homepage__,
-    download_url='https://github.com/ekdnam/flycatcher',
+    download_url='https://github.com/ekdnam/Kalpana',
     license="MIT",
     # packages=find_packages(exclude=['tests', 'tests/*', 'benchmarks']),
 
