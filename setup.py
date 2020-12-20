@@ -30,7 +30,7 @@ def _load_requirements(path_dir: str , file_name: str = 'requirements.txt', comm
     return reqs
 
 setup(
-    name="flycatcher",
+    name="Kalpana",
     version="0.0.1",
     description="A research framework for SOTA implementations of GANs",
     author="Aditya Mandke",
