@@ -1,1 +1,1 @@
-from AuxillaryClassifierGAN import ModelACGAN
+from kalpana.models.AuxillaryClassifierGAN import ModelACGAN
