@@ -1,5 +1,5 @@
-from flycatcher import models
+from kalpana import models
 
 __version__ = "v0.0.1a"
 
-name = "flycatcher"
+name = "kalpana"
