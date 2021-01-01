@@ -243,3 +243,8 @@ class ModelACGAN:
                         FloatTensor=self.FloatTensor,
                         LongTensor=self.LongTensor,
                     )
+
+
+if __name__ == "__main__":
+    model = ModelACGAN()
+    model.train()
