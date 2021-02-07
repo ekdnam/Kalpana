@@ -1,9 +1,9 @@
-from utils import initialize_weights_normally
-from utils import utils_save_image as save_image
+from .utils import initialize_weights_normally
+from .utils import utils_save_image as save_image
 
-from generator import Generator
-from discriminator import Discriminator
-from datasets import Dataset
+from .generator import Generator
+from .discriminator import Discriminator
+from .datasets import Dataset
 
 import numpy as np
 
