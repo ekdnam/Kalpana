@@ -113,6 +113,19 @@ class ModelACGAN:
 
         os.makedirs("data/mnist", exist_ok=True)
 
+        """optimizers for the generator and discriminator"""
+        self.generator_optimizer = torch.optim.Adam(
+            self.generator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
+        )
+        self.discriminator_optimizer = torch.optim.Adam(
+            self.discriminator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
+        )
+
+        """create tensors"""
+        self.FloatTensor = torch.cuda.FloatTensor if self.cuda else torch.FloatTensor
+        self.LongTensor = torch.cuda.LongTensor if self.cuda else torch.LongTensor
+
+    def download(self):
         self.dataloader = DataLoader(
             datasets.MNIST(
                 "data/mnist",
@@ -127,19 +140,8 @@ class ModelACGAN:
                 ),
             ),
             batch_size=self.batch_size,
-            shuffle=toShuffle,
+            shuffle=self.toShuffle,
         )
-        """optimizers for the generator and discriminator"""
-        self.generator_optimizer = torch.optim.Adam(
-            self.generator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
-        )
-        self.discriminator_optimizer = torch.optim.Adam(
-            self.discriminator_block.parameters(), lr=self.lr, betas=(self.b1, self.b2)
-        )
-
-        """create tensors"""
-        self.FloatTensor = torch.cuda.FloatTensor if self.cuda else torch.FloatTensor
-        self.LongTensor = torch.cuda.LongTensor if self.cuda else torch.LongTensor
 
     def train(self):
         r"""

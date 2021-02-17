@@ -137,8 +137,8 @@ class Discriminator(nn.Module):
         return validity
 
 
-if __name__ == '__main__':
-# Loss functions
+if __name__ == "__main__":
+    # Loss functions
     adversarial_loss = torch.nn.MSELoss()
 
     # Initialize generator and discriminator
@@ -180,7 +180,6 @@ if __name__ == '__main__':
     FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
     LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
 
-
     def sample_image(n_row, batches_done):
         """Saves a grid of generated digits ranging from 0 to n_classes"""
         # Sample noise
@@ -192,7 +191,6 @@ if __name__ == '__main__':
         save_image(
             gen_imgs.data, "images/%d.png" % batches_done, nrow=n_row, normalize=True
         )
-
 
     # ----------
     #  Training
@@ -218,7 +216,9 @@ if __name__ == '__main__':
             optimizer_G.zero_grad()
 
             # Sample noise and labels as generator input
-            z = Variable(FloatTensor(np.random.normal(0, 1, (batch_size, opt.latent_dim))))
+            z = Variable(
+                FloatTensor(np.random.normal(0, 1, (batch_size, opt.latent_dim)))
+            )
             gen_labels = Variable(
                 LongTensor(np.random.randint(0, opt.n_classes, batch_size))
             )
@@ -255,7 +255,14 @@ if __name__ == '__main__':
 
             print(
                 "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
-                % (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
+                % (
+                    epoch,
+                    opt.n_epochs,
+                    i,
+                    len(dataloader),
+                    d_loss.item(),
+                    g_loss.item(),
+                )
             )
 
             batches_done = epoch * len(dataloader) + i
